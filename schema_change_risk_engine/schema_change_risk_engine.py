@@ -41,9 +41,9 @@ class SchemaChangeRiskEngine:
     @staticmethod
     def rule_no_rename(stmt, columns):
         if "RENAME COLUMN" in stmt:
-            return False, f"Renaming columns is not allowed"
+            return False, "Renaming columns is not allowed"
         elif "RENAME TABLE" in stmt or "RENAME TO" in stmt:
-            return False, f"Renaming tables is not allowed"
+            return False, "Renaming tables is not allowed"
         else:
             return True, None
 
@@ -93,10 +93,8 @@ class SchemaChangeRiskEngine:
         if matches:
             column_defs = matches[0]
             column_defs = [col.strip() for col in column_defs.split(",")]
-            column_types = {}
             for col_def in column_defs:
                 col_parts = col_def.split()
-                col_name = col_parts[0]
                 col_type = col_parts[1]
                 col_type = re.findall(r"^\w+", col_type)[0]
                 if "ENUM" in col_type or "SET" in col_type:
