@@ -3,9 +3,7 @@ import re
 
 class SchemaChangeRiskEngine:
     def __init__(self):
-        self.rules = [
-            method_name for method_name in dir(self) if method_name.startswith("rule_")
-        ]
+        self.rules = [method_name for method_name in dir(self) if method_name.startswith("rule_")]
 
     def validate(self, sql_command):
         # Split SQL command into individual statements
