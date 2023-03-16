@@ -19,8 +19,8 @@ setuptools.setup(
         # 'Funding': '',
         # 'Say Thanks!': '',
     },
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    package_dir={"schema-change-risk-engine": "schema_change_risk_engine"},
+    packages=setuptools.find_packages(where="schema_change_risk_engine"),
     classifiers=[
         # see https://pypi.org/classifiers/
         "Development Status :: 5 - Production/Stable",
