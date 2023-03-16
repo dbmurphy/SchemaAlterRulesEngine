@@ -1,3 +1,3 @@
 from .schema_change_risk_engine import SchemaChangeRiskEngine
 
-__version__ = 'v0.0.8'
+__version__ = 'v0.0.9'
