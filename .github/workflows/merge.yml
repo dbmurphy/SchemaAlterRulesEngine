@@ -35,7 +35,7 @@ jobs:
         run: echo ::set-output name=version::$(python setup.py --version)
 
       - name: Generate changelog
-        uses: mathieudutour/github-tag-action@v6.3.0
+        uses: mathieudutour/github-tag-action@v6.1
         id: tag_and_changelog
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
