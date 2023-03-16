@@ -1,0 +1,38 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  print_context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print GitHub Event Context
+        continue-on-error: true
+        run: echo "${{ toJson(github.event) }}"
+
+  test:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.author_association == 'OWNER'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install -U pip
+          pip install black flake8 pytest
+
+      - name: Check code formatting and style
+        run: |
+          black --check .
+          flake8 .
+
+      - name: Run tests
+        run: pytest

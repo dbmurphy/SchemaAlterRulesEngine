@@ -1,0 +1,79 @@
+name: Publish Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install -U pip
+          pip install black flake8 pytest twine
+          pip install --upgrade build
+
+      - name: Run linters
+        run: |
+          black --check .
+          flake8 .
+
+      - name: Run tests
+        run: pytest
+      - name: Generate changelog
+        uses: mathieudutour/github-tag-action@v6.1
+        id: tag_and_changelog
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          version: patch
+          changelog_sections: |
+            Features: Features and User Stories
+            Bug Fixes: Bug Fixes and Hotfixes
+            Performance Improvements: Performance Improvements
+            Maintenance: Maintenance and Cleanup
+          changelog_exclude_labels: ci-*
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_and_changelog.outputs.new_tag }}
+          name: Release ${{ steps.tag_and_changelog.outputs.new_tag }}
+          body: ${{ steps.tag_and_changelog.outputs.changelog }}
+
+      - name: Update __init__.py and changelog
+        run: |
+          echo Patching CHANGELOG.md to ${{ steps.tag_and_changelog.outputs.new_tag }}
+          echo '${{ steps.tag_and_changelog.outputs.changelog }}' > changelog.md
+          cat CHANGELOG.md >> changelog.md
+          mv changelog.md CHANGELOG.md
+          git add CHANGELOG.md
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
+          git commit -m "ci(changelog): Automated ChangeLog for ${{ steps.tag_and_changelog.outputs.new_tag }}"
+
+          echo Patching pyproject.toml to ${{ steps.tag_and_changelog.outputs.new_tag }}
+          sed -i "s/^version = .*/version = \'${{ steps.tag_and_changelog.outputs.new_tag }}\'/g" pyproject.toml
+          sed -i "s/__version__ = .*/__version__ = \'${{ steps.tag_and_changelog.outputs.new_tag }}\'/g" schema_change_risk_engine/__init__.py
+          git add pyproject.toml schema_change_risk_engine/__init__.py
+          git commit -m "ci: Update pyproject.toml to version ${{ steps.tag_and_changelog.outputs.new_tag }}"
+          git push
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run build
+        run: python -m build
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.0
+        with:
+          username: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          repository_url: https://upload.pypi.org/legacy/
