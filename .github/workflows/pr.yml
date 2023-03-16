@@ -2,12 +2,19 @@ name: PR Checks
 
 on:
   pull_request:
-  pull_request_target:
+    types: [opened, synchronize]
 
 jobs:
-  check:
+  print_context:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.reviews.nodes[0].authorAssociation == 'OWNER'
+    steps:
+      - name: Print GitHub Event Context
+        continue-on-error: true
+        run: echo "${{ toJson(github.event) }}"
+
+  test:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.author_association == 'OWNER'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
