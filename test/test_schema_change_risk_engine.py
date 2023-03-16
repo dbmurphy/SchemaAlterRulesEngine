@@ -3,9 +3,8 @@ import sys
 
 import pytest
 
-from schema_change_risk_engine.schema_change_risk_engine import SchemaChangeRiskEngine
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from schema_change_risk_engine.schema_change_risk_engine import SchemaChangeRiskEngine
 
 
 @pytest.fixture
