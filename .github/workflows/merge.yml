@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -U pip
-          pip install black flake8 pytest auto-changelog twine
+          pip install black flake8 pytest twine
 
       - name: Run linters
         run: |
@@ -35,11 +35,22 @@ jobs:
         run: echo ::set-output name=version::$(python setup.py --version)
 
       - name: Generate changelog
-        uses: githubocto/auto-changelog@v1.3.0
+        uses: release-drafter/release-drafter@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          unreleased: true
-          output-file: CHANGELOG.md
+          tag-template: v${{ formatNumber(nextVersion.major) }}.${{ formatNumber(nextVersion.minor) }}.${{ formatNumber(nextVersion.patch) }}
+          template: |
+            ## Changes
+            {% for group in groups -%}
+            ### {{ group.title }}
+            {% for note in group.notes -%}
+            - {{ note.title }}
+            {% endfor -%}
+            {% endfor %}
+          change-template: '- {{message}} (@{{author}})'
+          change-labels: |
+            - 'enhancement'
+            - 'bug'
           exclude-labels: 'ci-*'
 
       - name: Create version tag
