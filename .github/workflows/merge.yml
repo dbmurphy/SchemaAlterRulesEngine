@@ -30,8 +30,6 @@ jobs:
 
       - name: Run tests
         run: pytest
-      - name: Run build
-        run: python -m build
       - name: Generate changelog
         uses: mathieudutour/github-tag-action@v6.1
         id: tag_and_changelog
@@ -71,7 +69,8 @@ jobs:
           git push
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Run build
+        run: python -m build
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
