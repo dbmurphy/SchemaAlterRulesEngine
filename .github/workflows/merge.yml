@@ -35,28 +35,22 @@ jobs:
         run: echo ::set-output name=version::$(python setup.py --version)
 
       - name: Generate changelog
-        uses: release-drafter/release-drafter@v5
+        uses: mathieudutour/github-tag-action@v6.3.0
+        id: tag_and_changelog
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag-template: v${{ formatNumber(nextVersion.major) }}.${{ formatNumber(nextVersion.minor) }}.${{ formatNumber(nextVersion.patch) }}
-          template: |
-            ## Changes
-            {% for group in groups -%}
-            ### {{ group.title }}
-            {% for note in group.notes -%}
-            - {{ note.title }}
-            {% endfor -%}
-            {% endfor %}
-          change-template: '- {{message}} (@{{author}})'
-          change-labels: |
-            - 'enhancement'
-            - 'bug'
-          exclude-labels: 'ci-*'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          version: patch
+          changelog_sections: |
+            Features: Features and User Stories
+            Bug Fixes: Bug Fixes and Hotfixes
+            Performance Improvements: Performance Improvements
+            Maintenance: Maintenance and Cleanup
+          changelog_exclude_labels: ci-*
 
       - name: Create version tag
         run: |
-          git tag -a "v${{ steps.version.outputs.version }}" -m "Version ${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
+          git tag -a "v${{ steps.tag_and_changelog.outputs.new_tag }}" -m "Version ${{ steps.tag_and_changelog.outputs.new_tag }}"
+          git push origin "v${{ steps.tag_and_changelog.outputs.new_tag }}"
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
