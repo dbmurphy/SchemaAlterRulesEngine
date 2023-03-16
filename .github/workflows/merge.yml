@@ -52,7 +52,7 @@ jobs:
 
       - name: Update __init__.py and changelog
         run: |
-          echo Patching CHANGELOG.md to ${{ env.PACKAGE_VERSION }}
+          echo Patching CHANGELOG.md to ${{ steps.tag_and_changelog.outputs.new_tag }}
           echo '${{ steps.tag_and_changelog.outputs.changelog }}' > changelog.md
           cat CHANGELOG.md >> changelog.md
           mv changelog.md CHANGELOG.md
@@ -61,11 +61,11 @@ jobs:
           git config user.email noreply@github.com
           git commit -m "ci(changelog): Automated ChangeLog for ${{ steps.tag_and_changelog.outputs.new_tag }}"
 
-          echo Patching pyproject.toml to ${{ env.PACKAGE_VERSION }}
-          sed -i "s/^version = .*/version = \'${{ env.PACKAGE_VERSION }}\'/g" pyproject.toml
-          sed -i "s/__version__ = .*/__version__ = \'${{ env.PACKAGE_VERSION }}\'/g" schema_change_risk_engine/__init__.py
+          echo Patching pyproject.toml to ${{ steps.tag_and_changelog.outputs.new_tag }}
+          sed -i "s/^version = .*/version = \'${{ steps.tag_and_changelog.outputs.new_tag }}\'/g" pyproject.toml
+          sed -i "s/__version__ = .*/__version__ = \'${{ steps.tag_and_changelog.outputs.new_tag }}\'/g" schema_change_risk_engine/__init__.py
           git add pyproject.toml schema_change_risk_engine/__init__.py
-          git commit -m "ci: Update pyproject.toml to version ${{ env.PACKAGE_VERSION }}"
+          git commit -m "ci: Update pyproject.toml to version ${{ steps.tag_and_changelog.outputs.new_tag }}"
           git push
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
