@@ -1,3 +1,6 @@
+### [0.0.9](https://github.com/dbmurphy/SchemaAlterRulesEngine/compare/v0.0.8...v0.0.9) (2023-03-16)
+
+
 ### [0.0.8](https://github.com/dbmurphy/SchemaAlterRulesEngine/compare/v0.0.7...v0.0.8) (2023-03-16)
 
 
