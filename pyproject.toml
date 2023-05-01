@@ -37,7 +37,7 @@ urls.changelog = "https://github.com/dbmurphy/SchemaAlterRulesEngine"
 [project.optional-dependencies]
 docs = [
     "furo >= 2021.08.31",
-    "sphinx ~= 6.0",
+    "sphinx >= 6,< 8",
     "sphinx-argparse-cli >= 1.5",
     "sphinx-autodoc-typehints >= 1.10",
 ]
